@@ -1,0 +1,146 @@
+--[[
+    Script de Auto Farm e Anti Staff para Mini City RP
+    Desenvolvido com base nas instruções do usuário.
+    Adapte e use com responsabilidade.
+--]]
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "AutoFarmGUI"
+gui.Parent = game.Players.LocalPlayer.PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 250)
+frame.Position = UDim2.new(0.05, 0, 0.05, 0)
+frame.BackgroundColor3 = Color3.new(0, 0, 0) -- Preto
+frame.Parent = gui
+
+local autoFarmButton = Instance.new("TextButton")
+autoFarmButton.Size = UDim2.new(0, 180, 0, 30)
+autoFarmButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+autoFarmButton.Text = "Auto Farm Peças"
+autoFarmButton.TextColor3 = Color3.new(1, 1, 1)
+autoFarmButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+autoFarmButton.Parent = frame
+
+local antiStaffButton = Instance.new("TextButton")
+antiStaffButton.Size = UDim2.new(0, 180, 0, 30)
+antiStaffButton.Position = UDim2.new(0.05, 0, 0.3, 0)
+antiStaffButton.Text = "Anti Staff"
+antiStaffButton.TextColor3 = Color3.new(1, 1, 1)
+antiStaffButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+antiStaffButton.Parent = frame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(0, 180, 0, 20)
+statusLabel.Position = UDim2.new(0.05, 0, 0.8, 0)
+statusLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+statusLabel.TextColor3 = Color3.new(1, 1, 1)
+statusLabel.Text = "Status: Desativado"
+statusLabel.Parent = frame
+
+local autoFarmAtivo = false
+local antiStaffAtivo = false
+
+-- Funções Auxiliares
+
+local function teleportar(posicao)
+    game.Players.LocalPlayer.Character:MoveTo(posicao)
+end
+
+local function exibirMensagem(mensagem, duracao)
+    statusLabel.Text = mensagem
+    wait(duracao)
+    statusLabel.Text = "Status: " .. (autoFarmAtivo or antiStaffAtivo and "Ativado" or "Desativado")
+end
+
+local function estaEmFaccao()
+    -- Lógica para verificar se o jogador está em uma facção (específico do Mini City RP)
+    -- Exemplo: Verificar se o jogador tem um distintivo de facção no inventário
+    -- Retorne true se estiver em uma facção, false caso contrário
+    return false -- Substitua pela lógica real
+end
+
+local function pegarMissao()
+    -- Lógica para interagir com o NPC e pegar a missão (específico do Mini City RP)
+    -- Exemplo: Disparar um evento remoto para o servidor
+    print("Pegando missão...")
+    -- game:GetService("ReplicatedStorage").Eventos.PegarMissao:FireServer() -- Exemplo
+    wait(2)
+    print("Missão pegada!")
+end
+
+local function pegarPeca()
+    -- Lógica para interagir com o objeto da peça e pegá-la (específico do Mini City RP)
+    -- Exemplo: Disparar um evento remoto para o servidor
+    print("Pegando peça...")
+    -- game:GetService("ReplicatedStorage").Eventos.PegarPeca:FireServer() -- Exemplo
+    wait(2)
+    print("Peça pegada!")
+end
+
+local function detectarStaff()
+    -- Lógica para detectar staffs no jogo (específico do Mini City RP)
+    -- Exemplo: Verificar se há jogadores com um certo distintivo ou cargo
+    -- Retorne true se um staff for detectado, false caso contrário
+    return false -- Substitua pela lógica real
+end
+
+-- Funções Principais
+
+local function autoFarm()
+    while autoFarmAtivo do
+        if not estaEmFaccao() then
+            exibirMensagem("Você precisa estar em uma facção!", 5)
+            wait(5)
+        else
+            -- Teleportar para o local de pegar missão
+            teleportar(Vector3.new(123, 45, 67)) -- Substitua pelas coordenadas reais
+            wait(3)
+
+            pegarMissao()
+            wait(3)
+
+            -- Teleportar para o local da peça
+            teleportar(Vector3.new(789, 12, 34)) -- Substitua pelas coordenadas reais
+            wait(3)
+
+            pegarPeca()
+            wait(3)
+
+            -- Teleportar de volta para pegar outra missão (opcional)
+            -- teleportar(Vector3.new(123, 45, 67))
+            wait(5)
+        end
+    end
+end
+
+local function antiStaff()
+    while antiStaffAtivo do
+        if detectarStaff() then
+            -- Lógica para lidar com a presença de um staff
+            exibirMensagem("Staff detectado! Agindo...", 5)
+            -- Exemplo: Sair do jogo, esconder-se, etc.
+            game:GetService("Players").LocalPlayer:Kick("Staff detectado!")
+            wait(5)
+        end
+        wait(5)
+    end
+end
+
+-- Eventos dos Botões
+
+autoFarmButton.MouseButton1Click:Connect(function()
+    autoFarmAtivo = not autoFarmAtivo
+    statusLabel.Text = "Status: " .. (autoFarmAtivo and "Ativado" or "Desativado")
+    if autoFarmAtivo then
+        spawn(autoFarm)
+    end
+end)
+
+antiStaffButton.MouseButton1Click:Connect(function()
+    antiStaffAtivo = not antiStaffAtivo
+    statusLabel.Text = "Status: " .. (antiStaffAtivo and "Ativado" or "Desativado")
+    if antiStaffAtivo then
+        spawn(antiStaff)
+    end
+end)
